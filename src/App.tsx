@@ -1,35 +1,25 @@
 import * as React from 'react';
-import './App.css';
+import booksApi from './api/books-api';
+import { Book } from './types';
 
-type Book = {
-  title: string;
-  author: string;
-  pages: number;
-  tags: string[];
-};
 const dbId = 'ff8e1c59e0124c9db5ac282b9a5c77fa';
+
 function App() {
   const [input, setInput] = React.useState('');
   const [book, setBook] = React.useState<Book | null>(null);
-  const [error, setError] = React.useState<Error>(null);
+  const [error, setError] = React.useState<Error | null>(null);
 
-  const handleSubmit = event => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    fetch(`http://localhost:5000/?url=${input}`)
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Something went wrong');
-        }
-        return res;
-      })
-      .then(res => res.json())
-      .then(json => {
-        setBook(json);
-      })
-      .catch(error => {
-        setError(error.message);
-      });
+    try {
+      const bookData = await booksApi.getBook(input);
+      setBook(bookData);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error);
+      }
+    }
   };
 
   const createBook = () => {
@@ -57,7 +47,7 @@ function App() {
           />
           <button type="submit">Send</button>
         </form>
-        {error && <p>{error}</p>}
+        {error && <p>{error.message}</p>}
       </header>
       <main>
         {book && (
@@ -65,7 +55,7 @@ function App() {
             <h2>Your book:</h2>
             <h3>Title: {book.title}</h3>
             <h3>Author: {book.author}</h3>
-            <h3>Pages: {book.pages}</h3>
+            <h3>Pages: {book.pagesCount}</h3>
             <h3>Tags:</h3>
             <ul>
               {book.tags.map(tag => (
