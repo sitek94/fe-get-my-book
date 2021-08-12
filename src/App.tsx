@@ -2,8 +2,6 @@ import * as React from 'react';
 import booksApi from './api/books-api';
 import { Book } from './types';
 
-const dbId = 'ff8e1c59e0124c9db5ac282b9a5c77fa';
-
 function App() {
   const [input, setInput] = React.useState('');
   const [book, setBook] = React.useState<Book | null>(null);
@@ -36,20 +34,23 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className="container text-gray-900">
+      <header className="pt-12">
+        <h1 className="mb-4 text-4xl font-bold text-center">Get My Book</h1>
+
         <form onSubmit={handleSubmit}>
           <input
+            className="input"
             name="url"
             type="text"
+            placeholder="Enter URL with book's data..."
             value={input}
             onChange={e => setInput(e.currentTarget.value)}
           />
-          <button type="submit">Send</button>
         </form>
         {error && <p>{error.message}</p>}
       </header>
-      <main>
+      {/* <main>
         {book && (
           <>
             <h2>Your book:</h2>
@@ -66,6 +67,7 @@ function App() {
         )}
         <button onClick={createBook}>CREATE</button>
       </main>
+    */}
     </div>
   );
 }
