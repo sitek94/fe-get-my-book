@@ -1,6 +1,8 @@
 import * as React from 'react';
 import booksApi from './api/books-api';
 import { Book } from './types';
+import { XIcon } from '@heroicons/react/outline';
+import clsx from 'clsx';
 
 function App() {
   const [input, setInput] = React.useState('');
@@ -35,7 +37,7 @@ function App() {
 
   return (
     <div className="container text-gray-900">
-      <header className="pt-12">
+      <header className="py-12">
         <h1 className="mb-4 text-4xl font-bold text-center">Get My Book</h1>
 
         <form onSubmit={handleSubmit}>
@@ -50,25 +52,67 @@ function App() {
         </form>
         {error && <p>{error.message}</p>}
       </header>
-      {/* <main>
-        {book && (
-          <>
-            <h2>Your book:</h2>
-            <h3>Title: {book.title}</h3>
-            <h3>Author: {book.author}</h3>
-            <h3>Pages: {book.pagesCount}</h3>
-            <h3>Tags:</h3>
-            <ul>
-              {book.tags.map(tag => (
-                <li key={tag}>{tag}</li>
-              ))}
-            </ul>
-          </>
-        )}
-        <button onClick={createBook}>CREATE</button>
+
+      <main>
+        <AddBookForm />
       </main>
-    */}
     </div>
+  );
+}
+
+interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  id: string;
+  label: string;
+}
+
+function TextField({ id, label, ...rest }: TextFieldProps) {
+  return (
+    <div>
+      <label htmlFor={id} className="mb-1 label">
+        {label}
+      </label>
+      <input id={id} className="input" {...rest} />
+    </div>
+  );
+}
+
+const dummyTags = ['autobiography', 'nonfiction', 'motivation'];
+
+interface TagProps {
+  children: React.ReactNode;
+}
+
+function Tag({ children }: TagProps) {
+  return (
+    <span
+      className={clsx(
+        'border text-gray-700 bg-white border-gray-300',
+        'inline-flex items-center p-2 text-base rounded-full ',
+      )}
+    >
+      <span className="mx-2">{children}</span>
+      <button className="p-1 bg-transparent rounded-full hover hover:bg-gray-300">
+        <XIcon className="w-4 h-4" />
+      </button>
+    </span>
+  );
+}
+
+function AddBookForm() {
+  return (
+    <form className="space-y-2">
+      <TextField id="title" label="Title" />
+      <TextField id="author" label="Author" />
+      <TextField id="pagesCount" type="number" label="Pages count" />
+      <div>
+        <label className="mb-1 label">Tags</label>
+        <div className="flex space-x-2">
+          {dummyTags.map(tag => (
+            <Tag key={tag}>{tag}</Tag>
+          ))}
+        </div>
+      </div>
+    </form>
   );
 }
 
