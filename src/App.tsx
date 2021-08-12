@@ -7,7 +7,7 @@ type Book = {
   pages: number;
   tags: string[];
 };
-
+const dbId = "ff8e1c59e0124c9db5ac282b9a5c77fa";
 function App() {
   const [input, setInput] = React.useState("");
   const [book, setBook] = React.useState<Book | null>(null);
@@ -30,6 +30,19 @@ function App() {
       .catch((error) => {
         setError(error.message);
       });
+  };
+
+  const createBook = () => {
+    console.log(book);
+    fetch("http://localhost:5000/book", {
+      method: "POST",
+      body: JSON.stringify(book),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then(console.log)
+      .catch(console.log);
   };
 
   return (
@@ -61,6 +74,7 @@ function App() {
             </ul>
           </>
         )}
+        <button onClick={createBook}>CREATE</button>
       </main>
     </div>
   );
