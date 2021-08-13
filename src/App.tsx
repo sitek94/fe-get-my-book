@@ -1,6 +1,8 @@
 import * as React from 'react';
 import booksApi from './api/books-api';
-import TagsField from './components/TagsField';
+import ControlledTagsField, {
+  useTagsField,
+} from './components/ControlledTagsField';
 import TextField from './components/TextField';
 import { Book } from './types';
 
@@ -63,15 +65,50 @@ function App() {
 const dummyTags = ['autobiography', 'nonfiction', 'motivation'];
 
 function AddBookForm() {
+  const [title, setTitle] = React.useState('');
+  const [author, setAuthor] = React.useState('');
+  const [pagesCount, setPagesCount] = React.useState(0);
+  const tagsFieldProps = useTagsField(dummyTags);
+  const { tags } = tagsFieldProps;
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const body = {
+      title,
+      author,
+      pagesCount,
+      tags,
+    };
+    console.log(body);
+  };
+
   return (
     <form className="space-y-2">
-      <TextField id="title" label="Title" />
-      <TextField id="author" label="Author" />
-      <TextField id="pagesCount" type="number" label="Pages count" />
+      <TextField
+        id="title"
+        label="Title"
+        value={title}
+        onChange={e => setTitle(e.target.value)}
+      />
+      <TextField
+        id="author"
+        label="Author"
+        value={author}
+        onChange={e => setAuthor(e.target.value)}
+      />
+      <TextField
+        id="pagesCount"
+        type="number"
+        label="Pages count"
+        value={pagesCount}
+        onChange={e => setPagesCount(Number(e.target.value))}
+      />
       <div>
         <label className="mb-1 label">Tags</label>
-        <TagsField initialTags={dummyTags} />
+        <ControlledTagsField {...tagsFieldProps} />
       </div>
+      <button onClick={onSubmit}>Submit</button>
     </form>
   );
 }
