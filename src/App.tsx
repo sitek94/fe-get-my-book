@@ -55,7 +55,6 @@ function App() {
 
       <main className="space-y-4">
         <AddBookForm />
-        <TagInputExample />
       </main>
     </div>
   );
@@ -80,19 +79,25 @@ function TextField({ id, label, ...rest }: TextFieldProps) {
 const dummyTags = ['autobiography', 'nonfiction', 'motivation'];
 
 interface TagProps {
-  children: React.ReactNode;
+  className?: string;
+  label: React.ReactNode;
+  onClick: () => void;
 }
 
-function Tag({ children }: TagProps) {
+function Tag({ className, label, onClick }: TagProps) {
   return (
     <span
       className={clsx(
         'border text-gray-700 bg-white border-gray-300',
         'inline-flex items-center p-2 text-base rounded-full ',
+        className,
       )}
     >
-      <span className="ml-2 mr-1">{children}</span>
-      <button className="p-1 bg-transparent rounded-full hover hover:bg-gray-300">
+      <span className="ml-2 mr-1">{label}</span>
+      <button
+        className="p-1 bg-transparent rounded-full hover hover:bg-gray-300"
+        onClick={onClick}
+      >
         <XIcon className="w-4 h-4" />
       </button>
     </span>
@@ -107,17 +112,13 @@ function AddBookForm() {
       <TextField id="pagesCount" type="number" label="Pages count" />
       <div>
         <label className="mb-1 label">Tags</label>
-        <div className="flex space-x-2">
-          {dummyTags.map(tag => (
-            <Tag key={tag}>{tag}</Tag>
-          ))}
-        </div>
+        <TagInputField />
       </div>
     </form>
   );
 }
 
-function TagInputExample() {
+function TagInputField() {
   const [input, setInput] = React.useState('');
   const [tags, setTags] = React.useState(dummyTags);
   const [isKeyReleased, setIsKeyReleased] = React.useState(true);
@@ -153,21 +154,25 @@ function TagInputExample() {
   };
 
   return (
-    <div>
-      {tags.map(tag => (
-        <div key={tag}>
-          <span>{tag}</span>
-          <button onClick={() => deleteTag(tag)}>X</button>
-        </div>
-      ))}
+    <div className="space-y-4">
       <input
-        className="w-full"
+        className="input"
         value={input}
         placeholder="Enter a tag"
         onKeyDown={onKeyDown}
         onKeyUp={() => setIsKeyReleased(true)}
         onChange={e => setInput(e.target.value)}
       />
+      <div className="flex flex-wrap space-x-2 space-x-reverse">
+        {tags.map(tag => (
+          <Tag
+            key={tag}
+            className="my-1"
+            label={tag}
+            onClick={() => deleteTag(tag)}
+          />
+        ))}
+      </div>
     </div>
   );
 }
