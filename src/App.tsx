@@ -1,5 +1,6 @@
 import * as React from 'react';
 import booksApi from './api/books-api';
+import OverlayButton from './components/OverlayButton';
 import TagsField from './components/TagsField';
 import TextField from './components/TextField';
 import { Book } from './types';
@@ -68,6 +69,8 @@ function AddBookForm() {
     console.log(body);
   };
 
+  const isFormValid = !!(title && author);
+
   return (
     <form className="space-y-2">
       <TextField
@@ -93,7 +96,8 @@ function AddBookForm() {
         <label className="mb-1 label">Tags</label>
         <TagsField tags={tags} setTags={setTags} />
       </div>
-      <button onClick={onSubmit}>Submit</button>
+
+      <OverlayButton label="Submit" show={isFormValid} onClick={onSubmit} />
     </form>
   );
 }

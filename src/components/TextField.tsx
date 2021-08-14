@@ -1,4 +1,6 @@
-interface TextFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
+import { InputBaseProps } from '../types';
+
+interface TextFieldProps extends InputBaseProps {
   id: string;
   label: string;
 }
