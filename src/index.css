@@ -21,4 +21,6 @@
 
 body {
   overflow-y: hidden;
+
+  @apply text-gray-900;
 }

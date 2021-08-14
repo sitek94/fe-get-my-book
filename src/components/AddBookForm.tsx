@@ -6,30 +6,33 @@ import TextField from './TextField';
 
 interface AddBookFromProps {
   initialValues: Book;
+  isLoading: boolean;
+  onSubmit: (book: Book) => void;
 }
 
-function AddBookForm({ initialValues }: AddBookFromProps) {
+function AddBookForm({ initialValues, isLoading, onSubmit }: AddBookFromProps) {
   const [title, setTitle] = React.useState(initialValues.title);
   const [author, setAuthor] = React.useState(initialValues.author);
   const [pagesCount, setPagesCount] = React.useState(initialValues.pagesCount);
   const [tags, setTags] = React.useState(initialValues.tags);
 
-  const onSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const body = {
+    const book = {
       title,
       author,
       pagesCount,
       tags,
     };
-    console.log(body);
+
+    onSubmit(book);
   };
 
   const isFormValid = !!(title && author);
 
   return (
-    <form className="space-y-2">
+    <form className="space-y-2" onSubmit={handleSubmit}>
       <TextField
         id="title"
         label="Title"
@@ -54,7 +57,12 @@ function AddBookForm({ initialValues }: AddBookFromProps) {
         <TagsField tags={tags} setTags={setTags} />
       </div>
 
-      <OverlayButton label="Submit" show={isFormValid} onClick={onSubmit} />
+      <OverlayButton
+        type="submit"
+        label="Submit"
+        show={isFormValid}
+        disabled={isLoading}
+      />
     </form>
   );
 }
