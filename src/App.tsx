@@ -1,8 +1,6 @@
 import * as React from 'react';
 import booksApi from './api/books-api';
-import ControlledTagsField, {
-  useTagsField,
-} from './components/ControlledTagsField';
+import TagsField from './components/TagsField';
 import TextField from './components/TextField';
 import { Book } from './types';
 
@@ -17,24 +15,12 @@ function App() {
     try {
       const bookData = await booksApi.getBook(input);
       setBook(bookData);
+      console.log(book);
     } catch (error) {
       if (error instanceof Error) {
         setError(error);
       }
     }
-  };
-
-  const createBook = () => {
-    console.log(book);
-    fetch('http://localhost:5000/book', {
-      method: 'POST',
-      body: JSON.stringify(book),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then(console.log)
-      .catch(console.log);
   };
 
   return (
@@ -68,8 +54,7 @@ function AddBookForm() {
   const [title, setTitle] = React.useState('');
   const [author, setAuthor] = React.useState('');
   const [pagesCount, setPagesCount] = React.useState(0);
-  const tagsFieldProps = useTagsField(dummyTags);
-  const { tags } = tagsFieldProps;
+  const [tags, setTags] = React.useState(dummyTags);
 
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -106,7 +91,7 @@ function AddBookForm() {
       />
       <div>
         <label className="mb-1 label">Tags</label>
-        <ControlledTagsField {...tagsFieldProps} />
+        <TagsField tags={tags} setTags={setTags} />
       </div>
       <button onClick={onSubmit}>Submit</button>
     </form>

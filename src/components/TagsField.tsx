@@ -2,12 +2,12 @@ import * as React from 'react';
 import Tag from './Tag';
 
 interface TagsFieldProps {
-  initialTags?: string[];
+  tags: string[];
+  setTags: (tags: string[]) => void;
 }
 
-function TagsField({ initialTags = [] }: TagsFieldProps) {
+function TagsField({ tags, setTags }: TagsFieldProps) {
   const [input, setInput] = React.useState('');
-  const [tags, setTags] = React.useState<string[]>(initialTags);
   const [isKeyReleased, setIsKeyReleased] = React.useState(true);
 
   const onKeyDown = (event: React.KeyboardEvent) => {
