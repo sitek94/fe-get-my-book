@@ -1,15 +1,17 @@
 import * as React from 'react';
 
 interface SearchBoxProps {
-  onSearchSubmit: (input: string) => void;
+  onSearchSubmit: (input: string) => Promise<void>;
 }
 
 function SearchBox({ onSearchSubmit }: SearchBoxProps) {
   const [input, setInput] = React.useState('');
 
-  const onSubmit = (event: React.FormEvent) => {
+  const onSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    onSearchSubmit(input);
+
+    await onSearchSubmit(input);
+    setInput('');
   };
 
   return (
