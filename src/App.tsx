@@ -20,7 +20,7 @@ function App() {
     setError(null);
 
     try {
-      const bookData = await booksApi.getBook(input);
+      const bookData = await booksApi.scrapeBookData(input);
       setBook(bookData);
     } catch (error) {
       if (error instanceof Error) {
