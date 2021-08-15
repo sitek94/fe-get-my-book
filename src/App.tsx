@@ -2,17 +2,15 @@ import { RefreshIcon } from '@heroicons/react/outline';
 import * as React from 'react';
 import booksApi from './api/books-api';
 import AddBookForm from './components/AddBookForm';
+import SearchBox from './components/SearchBox';
 import { Book } from './types';
 
 function App() {
-  const [input, setInput] = React.useState('');
   const [book, setBook] = React.useState<Book | null>(null);
   const [error, setError] = React.useState<Error | null>(null);
   const [isLoading, setIsLoading] = React.useState(false);
 
-  const onSearchSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
+  const onSearchSubmit = async (input: string) => {
     setIsLoading(true);
     setBook(null);
     setError(null);
@@ -53,16 +51,7 @@ function App() {
       <header className="py-4">
         <h1 className="mb-4 text-4xl font-bold text-center">Get My Book</h1>
 
-        <form onSubmit={onSearchSubmit}>
-          <input
-            className="input"
-            name="url"
-            type="text"
-            placeholder="Enter URL with book's data..."
-            value={input}
-            onChange={e => setInput(e.currentTarget.value)}
-          />
-        </form>
+        <SearchBox onSearchSubmit={onSearchSubmit} />
         {error && <p>{error.message}</p>}
       </header>
 
