@@ -61,7 +61,7 @@ function AddBookForm({ initialValues, isLoading, onSubmit }: AddBookFromProps) {
         type="submit"
         label="Submit"
         show={isFormValid}
-        disabled={isLoading}
+        isLoading={isLoading}
       />
     </form>
   );
