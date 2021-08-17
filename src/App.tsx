@@ -1,63 +1,29 @@
-import * as React from 'react';
-
 import booksApi from './api/books-api';
 import SearchBox from './components/SearchBox';
 import AddBookForm from './components/AddBookForm';
+import Link from './components/Link';
+import { Book } from './types';
+import { useAsync } from './hooks/use-async';
 import {
   ErrorMessage,
   LoadingMessage,
   Message,
   SuccessMessage,
 } from './components/Message';
-import Link from './components/Link';
-import { Book } from './types';
 
 function App() {
-  const [isInitialState, setIsInitialState] = React.useState(true);
-  const [book, setBook] = React.useState<Book | null>(null);
-  const [isScrapingBook, setIsScrapingBook] = React.useState(false);
-  const [isScrapingSuccess, setIsScrapingSuccess] = React.useState(false);
-  const [isSubmittingBook, setIsSubmittingBook] = React.useState(false);
-  const [isSubmittingSuccess, setIsSubmittingSuccess] = React.useState(false);
-  const [error, setError] = React.useState<Error | null>(null);
+  const searchState = useAsync<Book>();
+  const bookState = useAsync();
 
-  const onSearchSubmit = async (input: string) => {
-    setIsInitialState(false);
-    setIsScrapingBook(true);
-    setIsScrapingSuccess(false);
-    setBook(null);
-    setError(null);
-
-    try {
-      const bookData = await booksApi.scrapeBookData(input);
-      setBook(bookData);
-      setIsScrapingSuccess(true);
-    } catch (error) {
-      if (error instanceof Error) {
-        setBook(null);
-        setError(error);
-      }
-    } finally {
-      setIsScrapingBook(false);
-    }
+  const onSearchSubmit = (input: string) => {
+    searchState.run(booksApi.scrapeBookData(input));
   };
 
-  const onAddBookSubmit = async (book: Book) => {
-    setIsSubmittingBook(true);
-    setIsSubmittingSuccess(false);
-
-    try {
-      await booksApi.addBook(book);
-      setBook(null);
-      setIsSubmittingSuccess(true);
-    } catch (error) {
-      if (error instanceof Error) {
-        setError(error);
-      }
-    } finally {
-      setIsSubmittingBook(false);
-    }
+  const onAddBookSubmit = (book: Book) => {
+    bookState.run(booksApi.addBook(book));
   };
+
+  const error = searchState.error || bookState.error;
 
   return (
     <div className="max-w-lg mx-auto text-gray-700">
@@ -74,7 +40,7 @@ function App() {
           />
         )}
 
-        {isInitialState && (
+        {searchState.status === 'idle' && (
           <Message
             title="Hey there!"
             description={
@@ -87,7 +53,7 @@ function App() {
           />
         )}
 
-        {isScrapingBook && (
+        {searchState.status === 'pending' && (
           <LoadingMessage
             className="pt-8"
             title="Loading..."
@@ -95,15 +61,17 @@ function App() {
           />
         )}
 
-        {isScrapingSuccess && book && (
-          <AddBookForm
-            initialValues={book}
-            onSubmit={onAddBookSubmit}
-            isLoading={isSubmittingBook}
-          />
-        )}
+        {searchState.status === 'resolved' &&
+          bookState.status !== 'resolved' &&
+          searchState.data && (
+            <AddBookForm
+              initialValues={searchState.data}
+              onSubmit={onAddBookSubmit}
+              isLoading={bookState.status === 'pending'}
+            />
+          )}
 
-        {isSubmittingSuccess && (
+        {bookState.status === 'resolved' && (
           <SuccessMessage
             title="Success!"
             description="The book was added to the database."

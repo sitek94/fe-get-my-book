@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 interface SearchBoxProps {
-  onSearchSubmit: (input: string) => Promise<void>;
+  onSearchSubmit: (input: string) => void;
 }
 
 function SearchBox({ onSearchSubmit }: SearchBoxProps) {
