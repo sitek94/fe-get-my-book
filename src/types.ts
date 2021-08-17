@@ -9,3 +9,7 @@ export interface InputBaseProps
   extends React.InputHTMLAttributes<HTMLInputElement> {}
 export interface ButtonBaseProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {}
+
+export interface DivBaseProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export type HeroIcon = (props: React.ComponentProps<'svg'>) => JSX.Element;
