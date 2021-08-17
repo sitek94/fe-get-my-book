@@ -1,54 +1,63 @@
 import * as React from 'react';
-import { SearchIcon } from '@heroicons/react/outline';
 
 import booksApi from './api/books-api';
 import SearchBox from './components/SearchBox';
 import AddBookForm from './components/AddBookForm';
-import ErrorMessage from './components/ErrorMessage';
+import {
+  ErrorMessage,
+  LoadingMessage,
+  Message,
+  SuccessMessage,
+} from './components/Message';
 import Link from './components/Link';
 import { Book } from './types';
 
 function App() {
+  const [isInitialState, setIsInitialState] = React.useState(true);
   const [book, setBook] = React.useState<Book | null>(null);
-  const [isSubmittingSearch, setIsSubmittingSearch] = React.useState(false);
-  const [isSubmittingForm, setIsSubmittingForm] = React.useState(false);
+  const [isScrapingBook, setIsScrapingBook] = React.useState(false);
+  const [isScrapingSuccess, setIsScrapingSuccess] = React.useState(false);
+  const [isSubmittingBook, setIsSubmittingBook] = React.useState(false);
+  const [isSubmittingSuccess, setIsSubmittingSuccess] = React.useState(false);
   const [error, setError] = React.useState<Error | null>(null);
 
   const onSearchSubmit = async (input: string) => {
-    setIsSubmittingSearch(true);
+    setIsInitialState(false);
+    setIsScrapingBook(true);
+    setIsScrapingSuccess(false);
     setBook(null);
     setError(null);
 
     try {
       const bookData = await booksApi.scrapeBookData(input);
       setBook(bookData);
+      setIsScrapingSuccess(true);
     } catch (error) {
       if (error instanceof Error) {
         setBook(null);
         setError(error);
       }
     } finally {
-      setIsSubmittingSearch(false);
+      setIsScrapingBook(false);
     }
   };
 
   const onAddBookSubmit = async (book: Book) => {
-    setIsSubmittingForm(true);
+    setIsSubmittingBook(true);
+    setIsSubmittingSuccess(false);
 
     try {
       await booksApi.addBook(book);
       setBook(null);
+      setIsSubmittingSuccess(true);
     } catch (error) {
       if (error instanceof Error) {
         setError(error);
       }
     } finally {
-      setIsSubmittingForm(false);
+      setIsSubmittingBook(false);
     }
   };
-
-  const isInfoMsgVisible =
-    !book && !isSubmittingForm && !error && !isSubmittingSearch;
 
   return (
     <div className="max-w-lg mx-auto text-gray-700">
@@ -65,25 +74,39 @@ function App() {
           />
         )}
 
-        {isInfoMsgVisible && (
-          <p className="text-sm text-center text-gray-700">
-            Please enter a link of a book that you want to get the data. For the
-            time being we only support links from{' '}
-            <Link to="https://lubimyczytac.pl">lubimyczytać.pl</Link>
-          </p>
+        {isInitialState && (
+          <Message
+            title="Hey there!"
+            description={
+              <>
+                Enter a link of a book that you want to get the data. For the
+                time being we only support links from{' '}
+                <Link to="https://lubimyczytac.pl">lubimyczytać.pl</Link>
+              </>
+            }
+          />
         )}
 
-        {isSubmittingSearch && (
-          <div className="flex justify-center py-8 text-blue-500">
-            <SearchIcon className="w-24 h-24 animate-bounce" />
-          </div>
+        {isScrapingBook && (
+          <LoadingMessage
+            className="pt-8"
+            title="Loading..."
+            description="Please wait, we scrape your book's data."
+          />
         )}
 
-        {book && (
+        {isScrapingSuccess && book && (
           <AddBookForm
             initialValues={book}
             onSubmit={onAddBookSubmit}
-            isLoading={isSubmittingForm}
+            isLoading={isSubmittingBook}
+          />
+        )}
+
+        {isSubmittingSuccess && (
+          <SuccessMessage
+            title="Success!"
+            description="The book was added to the database."
           />
         )}
       </main>
