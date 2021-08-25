@@ -57,6 +57,9 @@ function asyncReducer<DataType>(
     case 'rejected': {
       return { status: 'rejected' as const, data: null, error: action.error };
     }
+    case 'reset': {
+      return { status: 'idle' as const, data: null, error: null };
+    }
     default: {
       throw new Error(`Unhandled action: ${JSON.stringify(action)}`);
     }
@@ -100,6 +103,10 @@ function useAsync<DataType>(initialState?: AsyncState<DataType>) {
     (error: Error) => dispatch({ type: 'rejected', error }),
     [dispatch],
   );
+  const reset = React.useCallback(
+    () => dispatch({ type: 'reset' }),
+    [dispatch],
+  );
 
   return {
     setData,
@@ -108,6 +115,7 @@ function useAsync<DataType>(initialState?: AsyncState<DataType>) {
     status,
     data,
     run,
+    reset,
   };
 }
 
