@@ -16,6 +16,7 @@ function App() {
   const bookState = useAsync();
 
   const onSearchSubmit = (input: string) => {
+    bookState.reset();
     searchState.run(booksApi.scrapeBookData(input));
   };
 
